@@ -1,4 +1,4 @@
-node {
+node('nodes'){
     try{ 
         
         def mavenHome = tool name: 'maven3.8.6'
@@ -19,7 +19,7 @@ node {
         stage('Build'){
             sh "${mavenHome}/bin/mvn clean package"
         }
-        /*
+        
         //Generate sonarqube report
         stage('SonarQubeReport'){
             sh "${mavenHome}/bin/mvn sonar:sonar"
@@ -35,7 +35,7 @@ node {
            sshagent(['2111ded7-4f97-47e2-9f93-277646565e29']) {
             sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.45.159:/opt/apache-tomcat-9.0.68/webapps"
             }
-        }*/
+        }
     }
    
     catch(e){
