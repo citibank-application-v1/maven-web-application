@@ -1,4 +1,6 @@
 node {
+    try{ 
+        
     def mavenHome = tool name: 'maven3.8.6'
     
     echo "The Job name is: ${env.JOB_NAME}" 
@@ -33,4 +35,41 @@ node {
         sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.45.159:/opt/apache-tomcat-9.0.68/webapps"
         }
     }*/
+    }
+   
+catch(e){
+currentBuild.result = "FAILURE"
+}
+finally{
+sendSlackNotifications(currentBuild.result)
+}
+
+
+
+def sendSlackNotifications(String buildStatus = 'STARTED') {
+  // build status of null means successful
+  buildStatus =  buildStatus ?: 'SUCCESS'
+
+  // Default values
+  def colorName = 'RED'
+  def colorCode = '#FF0000'
+  def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+  def summary = "${subject} (${env.BUILD_URL})"
+
+  // Override default values based on build status
+  if (buildStatus == 'STARTED') {
+    colorName = 'YELLOW'
+    colorCode = '#FFFF00'
+  } else if (buildStatus == 'SUCCESS') {
+    colorName = 'GREEN'
+    colorCode = '#00FF00'
+  } else {
+    colorName = 'RED'
+    colorCode = '#FF0000'
+  }
+
+  // Send notifications
+  slackSend (color: colorCode, message: summary)
+}
+
 }//node end
