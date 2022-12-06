@@ -11,6 +11,7 @@ node {
 
         //checkout code from git
         stage('CheckOutCode'){
+            sendSlackNotifications("STARTED")
             git branch: 'development', credentialsId: '49632c67-e760-4f4d-b0c6-2a2304f12e01', url: 'https://github.com/citibank-application-v1/maven-web-application.git'
         }
 
