@@ -1,6 +1,12 @@
 node {
     def mavenHome = tool name: 'maven3.8.6'
     
+    echo "The Job name is: ${env.JOB_NAME}" 
+    echo "The Build numebr is: ${env.BUILD_NUMBER}"
+    echo "The node name is: ${env.NODE_NAME}"
+
+    properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5')), [$class: 'JobLocalConfiguration', changeReasonComment: ''], pipelineTriggers([pollSCM('* * * * *')])])
+    
     //checkout code from git
     stage('CheckOutCode'){
         git branch: 'development', credentialsId: '49632c67-e760-4f4d-b0c6-2a2304f12e01', url: 'https://github.com/citibank-application-v1/maven-web-application.git'
@@ -10,7 +16,7 @@ node {
     stage('Build'){
         sh "${mavenHome}/bin/mvn clean package"
     }
-    
+    /*
     //Generate sonarqube report
     stage('SonarQubeReport'){
         sh "${mavenHome}/bin/mvn sonar:sonar"
@@ -26,5 +32,5 @@ node {
        sshagent(['2111ded7-4f97-47e2-9f93-277646565e29']) {
         sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.45.159:/opt/apache-tomcat-9.0.68/webapps"
         }
-    }
+    }*/
 }//node end
